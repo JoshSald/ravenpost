@@ -1,15 +1,14 @@
-
-
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using RavenPost.Api.Data;
 using RavenPost.Api.Models;
 using RavenPost.Api.Dtos;
+using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddOpenApi();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite("Data Source=ravenpost.db"));
@@ -18,8 +17,7 @@ var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    app.MapScalarApiReference();
 }
 
 using (var scope = app.Services.CreateScope())
