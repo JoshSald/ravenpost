@@ -129,6 +129,48 @@ dispatches.MapPost("/", async (DispatchRequest request, AppDbContext db) =>
     return Results.Created($"/dispatches/{dispatch.Id}", dispatch);
 });
 
+dispatches.MapGet("/", async (AppDbContext db) =>
+{
+    return await db.Dispatches
+        .AsNoTracking()
+        .Select(d => new
+        {
+            d.Id,
+            d.CreatedAt,
+            d.TotalCost,
+            ItemCount = d.Items.Count
+        })
+        .ToListAsync();
+});
+
+dispatches.MapGet("/{id:int}", async (int id, AppDbContext db) =>
+{
+    var result = await db.Dispatches
+        .Where(d => d.Id == id)
+        .Select(d => new
+        {
+            d.Id,
+            d.CreatedAt,
+            d.TotalCost,
+            Items = d.Items.Select(i => new
+            {
+                i.Id,
+                i.Quantity,
+                i.LineCost,
+                Supply = new
+                {
+                    i.Supply.Id,
+                    i.Supply.Name,
+                    i.Supply.Category,
+                    i.Supply.Price
+                }
+            })
+        })
+        .FirstOrDefaultAsync();
+
+    return result is null ? Results.NotFound() : Results.Ok(result);
+});;
+
 app.Run();
 
 record DispatchRequest(List<DispatchLine> Items);

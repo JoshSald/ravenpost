@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("RavenPost.Api")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c4f2ea3b1180ce1eef76e53eb18809d2df45db10")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c28e31a8ed329790ef56ffea2d03cd1efc01a223")]
 [assembly: System.Reflection.AssemblyProductAttribute("RavenPost.Api")]
 [assembly: System.Reflection.AssemblyTitleAttribute("RavenPost.Api")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
