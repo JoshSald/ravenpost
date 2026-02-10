@@ -26,4 +26,11 @@ using (var scope = app.Services.CreateScope())
 
 app.MapGet("/", () => "Raven Post is operational. The birds are restless.");
 
+var supplies = app.MapGroup("/supplies");
+
+supplies.MapGet("/", async (AppDbContext db) =>
+{
+    return await db.Supplies.AsNoTracking().ToListAsync();
+});
+
 app.Run();
