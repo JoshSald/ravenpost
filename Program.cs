@@ -1,3 +1,6 @@
+
+
+using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using RavenPost.Api.Data;
 using RavenPost.Api.Models;
@@ -111,7 +114,7 @@ var dispatches = app.MapGroup("/dispatches");
 
 dispatches.MapPost("/", async (DispatchRequest request, AppDbContext db) =>
 {
-    if (request.Items.Count == 0)
+    if (request.Items is null || request.Items.Count == 0)
         return Results.BadRequest("Dispatch must contain at least one item");
 
     var dispatch = new Dispatch
