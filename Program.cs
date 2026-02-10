@@ -89,4 +89,47 @@ supplies.MapDelete("/{id:int}", async (int id, AppDbContext db) =>
     return Results.NoContent();
 });
 
+var dispatches = app.MapGroup("/dispatches");
+
+dispatches.MapPost("/", async (DispatchRequest request, AppDbContext db) =>
+{
+    if (request.Items.Count == 0)
+        return Results.BadRequest("Dispatch must contain at least one item");
+
+    var dispatch = new Dispatch
+    {
+        CreatedAt = DateTime.UtcNow
+    };
+
+    decimal total = 0;
+
+    foreach (var item in request.Items)
+    {
+        var supply = await db.Supplies.FindAsync(item.SupplyId);
+        if (supply is null)
+            return Results.BadRequest($"Supply {item.SupplyId} not found");
+
+        var line = supply.Price * item.Quantity;
+
+        dispatch.Items.Add(new DispatchItem
+        {
+            SupplyId = supply.Id,
+            Quantity = item.Quantity,
+            LineCost = line
+        });
+
+        total += line;
+    }
+
+    dispatch.TotalCost = total;
+
+    db.Dispatches.Add(dispatch);
+    await db.SaveChangesAsync();
+
+    return Results.Created($"/dispatches/{dispatch.Id}", dispatch);
+});
+
 app.Run();
+
+record DispatchRequest(List<DispatchLine> Items);
+record DispatchLine(int SupplyId, int Quantity);
