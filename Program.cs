@@ -29,9 +29,29 @@ app.MapGet("/", () => "Raven Post is operational. The birds are restless.");
 
 var supplies = app.MapGroup("/supplies");
 
-supplies.MapGet("/", async (AppDbContext db) =>
-    await db.Supplies.AsNoTracking().ToListAsync()
-);
+supplies.MapGet("/", async (
+    string? q,
+    string? category,
+    decimal? minPrice,
+    decimal? maxPrice,
+    AppDbContext db) =>
+{
+    var query = db.Supplies.AsQueryable();
+
+    if (!string.IsNullOrWhiteSpace(q))
+        query = query.Where(s => s.Name.ToLower().Contains(q.ToLower()));
+
+    if (!string.IsNullOrWhiteSpace(category))
+        query = query.Where(s => s.Category == category);
+
+    if (minPrice.HasValue)
+        query = query.Where(s => s.Price >= minPrice.Value);
+
+    if (maxPrice.HasValue)
+        query = query.Where(s => s.Price <= maxPrice.Value);
+
+    return await query.AsNoTracking().ToListAsync();
+});
 
 supplies.MapGet("/{id:int}", async (int id, AppDbContext db) =>
 {
